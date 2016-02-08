@@ -51,6 +51,14 @@ def munge():
     
 return
 
+"""
+Ideas for data investigation/plots:
+L/R bar graph for time of day (sleep, afternoon, evening)
+Stacked bar for L/R/bottle per month
+Stacked bar for hrs slept, night + nap(s) per month
+Time sleeping in one day vs time eating in one day (correlated?)
+Do naps that immediately follow nursing last longer than ones that don't? (Time since last nurse vs. length of nap)
+"""
 
 
 def main():
