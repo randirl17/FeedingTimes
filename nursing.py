@@ -34,15 +34,19 @@ def munge():
     df.columns = newhead
     
     df['time'] = pd.to_datetime(df['time'])
+    del df['#']
 
 #Need to convert mm:ss entries to mm.mm
+#replace data where timer was left running (>45 min), default 15 min
     leftmin = convmmss(df['Left'].str.split(':'))
     rightmin = convmmss(df['Right'].str.split(':'))
+    leftadj = np.where(leftmin > 45, 15., leftmin)
+    rightadj = np.where(rightmin > 45, 15., rightmin)
 
 #Total feeding time = left + right if nursing, default 5 min if bottle fed
     botarr = np.array(df['Bottle'])
     bottime = np.where(botarr == ' Bottle-Pump',5.,0.)
-    totfeed = leftmin + rightmin + bottime
+    totfeed = leftadj + rightadj + bottime
     df.loc[:,'Total Feed'] = pd.Series(totfeed, index = df.index)
 
 
