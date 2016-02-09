@@ -49,7 +49,26 @@ def munge():
     totfeed = leftadj + rightadj + bottime
     df.loc[:,'Total Feed'] = pd.Series(totfeed, index = df.index)
 
-
+#Time columns
+    month = []
+    year = []
+    timeofday = []
+    for time in df['time']:
+        month.append(time.strftime('%m'))
+        year.append(time.strftime('%Y'))
+        if int(time.strftime('%H')) <= 06:
+            timeofday.append('Late night')
+        elif 06 < int(time.strftime('%H')) <= 12:
+            timeofday.append('Morning')
+        elif 12 < int(time.strftime('%H')) <= 18:
+            timeofday.append('Afternoon')
+        elif 18 <= int(time.strftime('%H')):
+            timeofday.append('Evening')
+    df['Month'] = month
+    df['Year'] = year
+    df['Time of Day'] = timeofday
+    
+    monthly = df.groupby([df['Year'],df['Month']])
     
     ordered = df.sort_values('time')
     
@@ -63,6 +82,7 @@ Stacked bar for L/R/bottle counts per month
 Stacked bar for hrs slept, night + nap(s) per month
 Time sleeping in one day vs time eating in one day (correlated?)
 Do naps that immediately follow nursing last longer than ones that don't? (Time since last nurse vs. length of nap)
+Frequency of bottle feedings per month (have bottle feedings become more rare with age?)
 
 make keys of month (0,1,2...) and week to .groupby() and perform summary stats on 
 """
