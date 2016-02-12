@@ -22,6 +22,23 @@ def convmmss(mmss):
         minlist.append(minutes)
     minarr = np.array(minlist)
     return minarr
+
+def convhms(hms):
+# converts column of ['hh:mm:ss'] lists to array of hh.hh data points
+    hrlist = []
+    for value in hms:
+        if str(value) == 'nan':
+            hours = float(value)
+        elif str(value) ==' ':
+            hours = float('Nan')
+        else:
+            valspl = str(value).split(':')
+            if int(valspl[2]) < 10:
+                valspl[2] = valspl[2] + '0'
+            hours = float(valspl[0]) + float(valspl[1])/60. + float(valspl[2])/60.
+        hrlist.append(hours)
+    hrarr = np.array(hrlist)
+    return hrarr
         
 def munge(file):
     df = pd.read_csv(file)
@@ -43,15 +60,15 @@ def munge(file):
     rightmin = convmmss(df['Right'].str.split(':'))
     leftadj = np.where(leftmin > 45, 15., leftmin)
     rightadj = np.where(rightmin > 45, 15., rightmin)
-    df.loc[:,'leftfeed'] = pd.Series(leftadj, index = df.index)
-    df.loc[:,'rightfeed'] = pd.Series(rightadj, index = df.index)
+    df.loc[:,'LeftFeed'] = pd.Series(leftadj, index = df.index)
+    df.loc[:,'RightFeed'] = pd.Series(rightadj, index = df.index)
 
 #Total feeding time = left + right if nursing, default 5 min if bottle fed
     botarr = np.array(df['Bottle'])
     bottime = np.where(botarr == ' Bottle-Pump',5.,0.)
-    df.loc[:,'botfeed'] = pd.Series(bottime, index = df.index)
+    df.loc[:,'BotFeed'] = pd.Series(bottime, index = df.index)
     totfeed = leftadj + rightadj + bottime
-    df.loc[:,'totalfeed'] = pd.Series(totfeed, index = df.index)
+    df.loc[:,'TotalFeed'] = pd.Series(totfeed, index = df.index)
 
 #Time columns
     month = []
@@ -70,13 +87,28 @@ def munge(file):
             timeofday.append('Evening')
     df['Month'] = month
     df['Year'] = year
-    df['Time of Day'] = timeofday
+    df['TimeofDay'] = timeofday
+
+#Bottle amounts
+    botamt = []
+    for amt in df['Bottle Amount']:
+        if 'oz' not in amt:
+            newamt = float('NaN')
+        else:
+            newamt = amt.strip().replace('oz','')
+        botamt.append(newamt)
+    df['BotAmt'] = botamt
+
+#Sleep times
+    sleephr = convhms(df['Sleep time'])
+    df['Sleep'] = sleephr
 
 #construct feeding DataFrame
     feeddf = pd.DataFrame(df, columns=['time','Year','Month',
-                                       'Time of Day','leftfeed',
-                                       'rightfeed','Total Feed'])
-    feeddf.insert(6,'botfeed',bottime)
+                                       'TimeofDay','LeftFeed',
+                                       'RightFeed','BotFeed','TotalFeed',
+                                       'BotAmt','Sleep'])
+#    feeddf.insert(6,'botfeed',bottime)
     return feeddf
 """
 Alternative formulation for a new DataFrame using dict notation.
@@ -104,7 +136,9 @@ def main():
     if not args:
         print('usage: ./NursingMunge.py file')
         sys.exit(1)
-        munge(ars[0])
+
+    cleandf = munge(args[0])
+    cleandf.to_csv('NursingData_clean.csv',float_format='%.2f')
 
 if __name__ == '__main__':
   main()
