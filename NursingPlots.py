@@ -16,7 +16,6 @@ import NursingMunge
 def routine(file):
     plotdf = NursingMunge(file)
 
-
 return
 
 """
@@ -36,9 +35,9 @@ def main():
     args = sys.argv[1:]
 
   if not args:
-    print('usage: ./HWpull.py file')
+    print('usage: ./NursingPlots.py file')
     sys.exit(1)
-    munge(ars[0])
+    munge(args[0])
 
 
 if __name__ == '__main__':
