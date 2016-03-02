@@ -125,11 +125,6 @@ Alternative formulation for a new DataFrame using dict notation.
 #    monthly = df.groupby([df['Year'],df['Month']])
 #    ordered = df.sort_values('time')
 
-
-#still to address:  bottle amounts, sleep time
-#bottle amounts are str "#oz" or "#.5oz", need to replace 'oz' w/ '' then convert remaining str to float, default NaN for 
-#so sleep times are hh:mm:ss, so will need to do a similar conversion as "Left" etc.
-
 def main():
     args = sys.argv[1:]
 
@@ -138,7 +133,7 @@ def main():
         sys.exit(1)
 
     cleandf = munge(args[0])
-    cleandf.to_csv('NursingData_clean.csv',float_format='%.2f')
+    cleandf.to_csv('NursingData_3-1_clean.csv',float_format='%.2f')
 
 if __name__ == '__main__':
   main()
