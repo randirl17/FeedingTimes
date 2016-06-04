@@ -13,10 +13,11 @@ def plotting(file,ext):
 #gets used in the smoothing
     xtime = [int(x.hour)+int(x.minute)/60 for x in ts.index]
 
-    for i in range(1,12)
+    for i in range(1,12):
         monthnum = i
         motxt = time.strftime('%B',time.strptime(str(monthnum),'%m'))
         mocheck = ts.columns.levels[0].month == monthnum
+####        if mocheck.isfalse(): continue
         moflag = []
         for ans in mocheck:
             moflag.append(ans)
