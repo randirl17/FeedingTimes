@@ -1,30 +1,36 @@
-#ipython MonthlyPlots.py 'NursingData_clean_ts.csv' plot_extension
+#ipython ./Pipeline/MonthlyPlots.py './DataFiles/NursingData_clean_ts.csv' plot_extension
 """
-Convert clean nursing data into dummy table in order to plot daily,monthly % per time
+Create one plot per calendar month of eat/sleep patterns.
 """
 import sys
 import pandas as pd
 import numpy as np
 import datetime as dt
+import time
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from statsmodels.nonparametric.smoothers_lowess import lowess
 
 def plotting(file,ext):
-    eats= ts.xs('Eat',level=1,axis=1)
-    sleeps = ts.xs('Sleep',level=1,axis=1)
-#gets used in the smoothing
-    xtime = [int(x.hour)+int(x.minute)/60 for x in ts.index]
+    ts = pd.read_csv(file, header=[0,1],index_col=[0])
+    ts.index = [dt.datetime.strptime(x, "%H:%M:%S").time() for x in ts.index]
+    ts.columns.set_levels([dt.datetime.strptime(x, "%Y-%m-%d %H:%M:%S").date() for x in ts.columns.levels[0].values], 0, inplace=True)
 
-    for i in range(1,12):
-        monthnum = i
+    #gets used in the smoothing
+    xtime = [int(x.hour)+int(x.minute)/60 for x in ts.index]
+    timeind = pd.date_range("00:00", "23:59", freq='min').to_pydatetime()###Very important!
+
+#for each month in the data, construct a df of just that month
+    for mo in set([x.month for x in ts.columns.levels[0]]):
+        monthnum = mo
         motxt = time.strftime('%B',time.strptime(str(monthnum),'%m'))
-        mocheck = ts.columns.levels[0].month == monthnum
-####        if mocheck.isfalse(): continue
+        mocheck = [x.month == monthnum for x in ts.columns.levels[0]]
         moflag = []
         for ans in mocheck:
             moflag.append(ans)
             moflag.append(ans)
 
         onemo = ts.loc[:,moflag]
-        print(len(onemo.columns)/2)
 
         sleepy = onemo.xs('Sleep',level=1,axis=1).sum(axis=1)/(len(onemo.columns)/2)
         eaty = onemo.xs('Eat',level=1,axis=1).sum(axis=1)/(len(onemo.columns)/2)
@@ -37,7 +43,7 @@ def plotting(file,ext):
         filtereds = lowess(sleepy, xtime, is_sorted=True, frac=0.025, it=0)
         ax.plot(timeind, filtereds[:,1], 'b',linewidth=2,label='Sleeping')
         ax.fill_between(timeind, 0, filtereds[:,1],alpha=0.3,facecolor='b')
-        #ax.plot(ts.index,sleepy,'b',linewidth=2,label='Sleeping')
+        #ax.plot(ts.index,sleepy,'b',linewidth=2,label='Sleeping')#raw data, not smoothed
         #ax.fill_between(ts.index, 0, sleepy,alpha=0.3,facecolor='b')
 
         ####Plot Eat
@@ -56,7 +62,7 @@ def plotting(file,ext):
         ax.legend(fontsize='x-large')
         ax.set_ylim(0,0.9)
         fig.autofmt_xdate()
-        filename = 'Activity_' + motxt + ext
+        filename = 'Activity_' + str(monthnum) + '.' + ext
         fig.savefig(filename)
     return 
 

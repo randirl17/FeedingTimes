@@ -133,7 +133,8 @@ def main():
         sys.exit(1)
 
     cleandf = munge(args[0])
-    cleandf.to_csv('NursingData_3-1_clean.csv',float_format='%.2f')
+    outfile = args[0].split('.')[0] + '_clean.csv'
+    cleandf.to_csv(outfile,float_format='%.2f')
 
 if __name__ == '__main__':
   main()
