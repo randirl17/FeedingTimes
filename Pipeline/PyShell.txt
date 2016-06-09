@@ -1,0 +1,7 @@
+#running shell commands in python
+import subprocess
+
+lsout = subprocess.Popen('ls *png',stdout=subprocess.PIPE, universal_newlines=True,shell=True)
+
+for line in lsout.stdout.readlines():
+    print(line)

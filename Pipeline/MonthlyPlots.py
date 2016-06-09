@@ -14,7 +14,7 @@ from statsmodels.nonparametric.smoothers_lowess import lowess
 def plotting(file,ext):
     ts = pd.read_csv(file, header=[0,1],index_col=[0])
     ts.index = [dt.datetime.strptime(x, "%H:%M:%S").time() for x in ts.index]
-    ts.columns.set_levels([dt.datetime.strptime(x, "%Y-%m-%d %H:%M:%S").date() for x in ts.columns.levels[0].values], 0, inplace=True)
+    ts.columns.set_levels([dt.datetime.strptime(x, "%Y-%m-%d").date() for x in ts.columns.levels[0].values], 0, inplace=True)
 
     #gets used in the smoothing
     xtime = [int(x.hour)+int(x.minute)/60 for x in ts.index]
@@ -58,11 +58,11 @@ def plotting(file,ext):
         xax.set_major_locator(mdates.HourLocator(byhour=range(0,24,2)))
         xax.set_major_formatter(mdates.DateFormatter('%H:%M'))
         ax.set_title('Activity Fraction at a Given Time of Day',fontsize='xx-large')
-        ax.text('16:00',max(max(filterede[:,1]),max(filtereds[:,1]))*0.95,motxt,fontsize='xx-large',color='k',fontweight='bold')
+        ax.text('16:00',0.8,motxt,fontsize='xx-large',color='k',fontweight='bold')
         ax.legend(fontsize='x-large')
-        ax.set_ylim(0,0.9)
+        ax.set_ylim(0,1)
         fig.autofmt_xdate()
-        filename = 'Activity_' + str(monthnum) + '.' + ext
+        filename = 'b2_TimeSeries/Activity_' + str(monthnum) + '.' + ext
         fig.savefig(filename)
     return 
 

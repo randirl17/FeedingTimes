@@ -52,7 +52,7 @@ def munge(file):
 
     eats = ts.xs('Eat',level=1,axis=1)
     sleeps = ts.xs('Sleep',level=1,axis=1)
-    return ts, eats, sleeps, ts.index, ts.columns
+    return ts, eats, sleeps
 
 def main():
     args = sys.argv[1:]
@@ -66,11 +66,11 @@ def main():
     fileeat = filefront + '_tsE.csv'
     filesleep = filefront + '_tsS.csv'
     
-    cleants, cleaneat, cleansleep, rownames, colnames  = munge(args[0])
+    cleants, cleaneat, cleansleep  = munge(args[0])
 ####
 ####need to modify to_csv for multiindex on cleants!!!    
 ####,index_label=colnames
-    ts.to_csv(filets,float_format='%.2f',index=True,date_format='%Y-%m-%d')
+    cleants.to_csv(filets,float_format='%.2f',index=True,date_format='%Y-%m-%d')
     cleaneat.to_csv(fileeat,float_format='%.2f',index=True)
     cleansleep.to_csv(filesleep,float_format='%.2f',index=True)
 

@@ -1,0 +1,5 @@
+#data cleaning pipeline commands
+
+ipython Pipeline/NursingMunge.py Datafiles/NursingData_6-3.csv
+ipython Pipeline/Day24hr_munge.py Datafiles/NursingData_6-3_clean.csv
+
