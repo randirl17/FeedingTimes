@@ -2,4 +2,4 @@
 
 ipython Pipeline/NursingMunge.py Datafiles/NursingData_6-3.csv
 ipython Pipeline/Day24hr_munge.py Datafiles/NursingData_6-3_clean.csv
-
+ipython Pipeline/MonthlyPlots.py Datafiles/NursingData_5-31_clean_ts.csv png
