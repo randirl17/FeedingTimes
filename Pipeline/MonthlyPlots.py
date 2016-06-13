@@ -58,9 +58,9 @@ def plotting(file,ext):
         xax.set_major_locator(mdates.HourLocator(byhour=range(0,24,2)))
         xax.set_major_formatter(mdates.DateFormatter('%H:%M'))
         ax.set_title('Activity Fraction at a Given Time of Day',fontsize='xx-large')
-        ax.text('16:00',0.8,motxt,fontsize='xx-large',color='k',fontweight='bold')
+        ax.text('16:00',0.9,motxt,fontsize='xx-large',color='k',fontweight='bold')
         ax.legend(fontsize='x-large')
-        ax.set_ylim(0,1)
+        ax.set_ylim(0,1.1)
         fig.autofmt_xdate()
         filename = 'b2_TimeSeries/Activity_' + str(monthnum) + '.' + ext
         fig.savefig(filename)

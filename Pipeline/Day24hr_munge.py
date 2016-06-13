@@ -38,17 +38,37 @@ def munge(file):
             inthrs = int(df.Sleep[i])
             intmin = int((df.Sleep[i]-inthrs)*60)
             endtime = dtinfo + dt.timedelta(hours = inthrs, minutes = intmin)
-
+#        for dates in datearr[230:235]:
+        endtime = endtime
+        dtinfo = dtinfo
+        
         for dates in datearr:
             #find matching date
             if dtinfo.date() == dates:            
                 #go through times on that date, set appropriate toggles
                 for timebymin in ts.index:
-                    if dtinfo.time() < timebymin and timebymin <= endtime.time():
+                    if dtinfo < dt.datetime.combine(dtinfo.date(),timebymin) <= endtime:
                         if eatsleep == 'e':
                             ts.loc[timebymin,(dates,'Eat')]=1
                         if eatsleep == 's':
                             ts.loc[timebymin,(dates,'Sleep')]=1
+                    if dt.datetime.combine(dtinfo.date(),timebymin) > endtime:
+                        break
+#previous for loop goes through 0-24 hours, but what about events that pass through midnight?
+#2016-02-06 23:20:26, 2016-02-07 11:51:26
+#previous loop will get the part from 23:20:26 - 24:00
+#need to get the part from 00:00-11:51 on the next day
+
+#### CHECK THAT THIS MATCHES THE NOTEBOOK, SINCE REVISIONS WERE MADE!!!! ####
+                if endtime.date() > dates:
+                    for timebymin in ts.index:
+                        if dtinfo < dt.datetime.combine(endtime.date(),timebymin) <= endtime:
+                            if eatsleep == 'e':
+                                ts.loc[timebymin,(endtime.date(),'Eat')]=1
+                            if eatsleep == 's':
+                                ts.loc[timebymin,(endtime.date(),'Sleep')]=1
+                        if dt.datetime.combine(dtinfo.date(),timebymin) > endtime:
+                            break
 
     eats = ts.xs('Eat',level=1,axis=1)
     sleeps = ts.xs('Sleep',level=1,axis=1)
@@ -62,14 +82,12 @@ def main():
         sys.exit(1)
 
     filefront,fileend = args[0].split('.')
-    filets = filefront + '_ts.csv'
-    fileeat = filefront + '_tsE.csv'
-    filesleep = filefront + '_tsS.csv'
+    filets = filefront + '_tsmid.csv'
+    fileeat = filefront + '_tsEmid.csv'
+    filesleep = filefront + '_tsSmid.csv'
     
     cleants, cleaneat, cleansleep  = munge(args[0])
-####
-####need to modify to_csv for multiindex on cleants!!!    
-####,index_label=colnames
+
     cleants.to_csv(filets,float_format='%.2f',index=True,date_format='%Y-%m-%d')
     cleaneat.to_csv(fileeat,float_format='%.2f',index=True)
     cleansleep.to_csv(filesleep,float_format='%.2f',index=True)
