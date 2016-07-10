@@ -1,4 +1,4 @@
-#ipython Day24hr_munge.py 'NursingData_clean.csv'
+#ipython ../Pipeline/Day24hr_munge.py '../Datafiles/NursingData_6-3_clean.csv'
 """
 Convert clean nursing data into dummy table in order to plot daily,monthly % per time
 """
@@ -38,7 +38,6 @@ def munge(file):
             inthrs = int(df.Sleep[i])
             intmin = int((df.Sleep[i]-inthrs)*60)
             endtime = dtinfo + dt.timedelta(hours = inthrs, minutes = intmin)
-#        for dates in datearr[230:235]:
         endtime = endtime
         dtinfo = dtinfo
         
@@ -59,7 +58,6 @@ def munge(file):
 #previous loop will get the part from 23:20:26 - 24:00
 #need to get the part from 00:00-11:51 on the next day
 
-#### CHECK THAT THIS MATCHES THE NOTEBOOK, SINCE REVISIONS WERE MADE!!!! ####
                 if endtime.date() > dates:
                     for timebymin in ts.index:
                         if dtinfo < dt.datetime.combine(endtime.date(),timebymin) <= endtime:
@@ -67,9 +65,9 @@ def munge(file):
                                 ts.loc[timebymin,(endtime.date(),'Eat')]=1
                             if eatsleep == 's':
                                 ts.loc[timebymin,(endtime.date(),'Sleep')]=1
-                        if dt.datetime.combine(dtinfo.date(),timebymin) > endtime:
+                        if dt.datetime.combine(endtime.date(),timebymin) > endtime:
                             break
-
+        
     eats = ts.xs('Eat',level=1,axis=1)
     sleeps = ts.xs('Sleep',level=1,axis=1)
     return ts, eats, sleeps
@@ -81,7 +79,7 @@ def main():
         print('usage: ./Day24hr_munge.py file')
         sys.exit(1)
 
-    filefront,fileend = args[0].split('.')
+    filefront = args[0][:-4]
     filets = filefront + '_tsmid.csv'
     fileeat = filefront + '_tsEmid.csv'
     filesleep = filefront + '_tsSmid.csv'

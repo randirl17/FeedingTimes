@@ -1,6 +1,7 @@
 #ipython ./Pipeline/MonthlyPlots.py './DataFiles/NursingData_clean_ts.csv' plot_extension
 """
 Create one plot per calendar month of eat/sleep patterns.
+Turn into animated gif using http://ezgif.com/maker
 """
 import sys
 import pandas as pd
